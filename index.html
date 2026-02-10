@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>per cri❤️</title>
+
+  <style>
+    :root{
+      --bg1:#ff4aa8;
+      --bg2:#ff86c8;
+      --panel:#ffd6e8;
+      --card:#ffffff;
+      --txt:#6b2443;
+      --muted:#9a5572;
+      --accent:#ff2f75;
+      --shadow: 0 18px 60px rgba(0,0,0,.25);
+      --radius: 26px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family: ui-rounded, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:var(--txt);
+      overflow:hidden;
+      background:
+        radial-gradient(1100px 700px at 15% 20%, rgba(255,255,255,.25), transparent 60%),
+        radial-gradient(900px 600px at 80% 30%, rgba(255,255,255,.18), transparent 60%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+    }
+
+    /* cuori sullo sfondo */
+    .hearts{ position:fixed; inset:0; pointer-events:none; opacity:.75; }
+    .heart{
+      position:absolute;
+      font-size:18px;
+      opacity:.9;
+      animation: floatUp linear infinite;
+      text-shadow: 0 10px 25px rgba(0,0,0,.15);
+      filter: blur(.1px);
+    }
+    @keyframes floatUp{
+      from { transform: translateY(110vh) translateX(0) scale(.8); opacity:0; }
+      10% { opacity:.9; }
+      to   { transform: translateY(-20vh) translateX(40px) scale(1.25); opacity:0; }
+    }
+
+    /* contenitore principale */
+    .frame{
+      width:min(760px, 92vw);
+      padding: 26px 18px;
+      border-radius: 34px;
+      background: rgba(255,255,255,.08);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow);
+      position:relative;
+    }
+
+    /* ✅ FIX: ora la panel può scrollare e NON taglia il minigioco */
+    .panel{
+      background: var(--panel);
+      border-radius: var(--radius);
+      padding: 38px 22px;
+      box-shadow: 0 12px 30px rgba(255, 59, 119, .18) inset;
+      position:relative;
+      min-height: 430px;
+
+      overflow:auto;
+      max-height: calc(100vh - 160px);
+    }
+    .panel::before{
+      content:"";
+      position:absolute;
+      inset:-40px;
+      background:
+        radial-gradient(closest-side, rgba(255,255,255,.45), transparent 65%),
+        radial-gradient(closest-side, rgba(255,255,255,.25), transparent 70%);
+      transform: rotate(8deg);
+      opacity:.55;
+      pointer-events:none;
+    }
+
+    /* screens */
+    .screen{
+      position:relative;
+      display:none;
+      place-items:center;
+      text-align:center;
+      gap: 14px;
+      min-height: 340px;
+    }
+    .screen.active{ display:grid; }
+
+    /* ✅ un po' di spazio in basso nella schermata finale */
+    #screenFinal{ padding-bottom: 18px; }
+
+    .fadeOut{ animation: fadeOut .35s ease forwards; }
+    .fadeIn{ animation: fadeIn .55s cubic-bezier(.2,.9,.2,1) forwards; }
+    @keyframes fadeOut{
+      to { opacity:0; transform: scale(.98); filter: blur(1.5px); }
+    }
+    @keyframes fadeIn{
+      from { opacity:0; transform: scale(.96); filter: blur(3px); }
+      to   { opacity:1; transform: scale(1); filter: blur(0); }
+    }
+
+    /* bottone lucchetto */
+    .lockBtn{
+      width: 210px;
+      height: 210px;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      user-select:none;
+      border:none;
+      background: transparent;
+      padding:0;
+      transform: translateZ(0);
+    }
+    .lockIcon{
+      width: 190px;
+      height: 190px;
+      filter: drop-shadow(0 18px 35px rgba(255,47,117,.35));
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse{
+      0%,100%{ transform: scale(1); }
+      50%{ transform: scale(1.06); }
+    }
+
+    .title{
+      font-weight:900;
+      font-size: 20px;
+      letter-spacing:.2px;
+    }
+    .hint{
+      font-size: 14px;
+      color: var(--muted);
+      font-weight:600;
+      margin-top:-6px;
+    }
+
+    /* modal */
+    .modal{
+      position: fixed;
+      inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,.35);
+      backdrop-filter: blur(6px);
+      z-index: 50;
+      padding: 18px;
+    }
+    .modal.show{ display:grid; }
+
+    .card{
+      width:min(360px, 92vw);
+      background: var(--card);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 18px 16px 16px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .closeX{
+      position:absolute;
+      right: 12px;
+      top: 10px;
+      width: 34px;
+      height: 34px;
+      border:none;
+      border-radius: 12px;
+      background: rgba(0,0,0,.05);
+      cursor:pointer;
+      font-size: 18px;
+      line-height: 34px;
+      color: rgba(0,0,0,.5);
+    }
+
+    .cardHeader{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      font-weight: 900;
+      letter-spacing:.2px;
+      margin: 2px 0 10px;
+      color: var(--accent);
+    }
+
+    .display{
+      border: 2px solid rgba(255,47,117,.22);
+      background: rgba(255,47,117,.06);
+      border-radius: 14px;
+      padding: 10px 12px;
+      text-align:center;
+      font-weight: 900;
+      color: var(--txt);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      min-height: 44px;
+      margin-bottom: 10px;
+    }
+    .display span{
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 1px;
+    }
+
+    .msg{
+      font-weight: 800;
+      color: var(--muted);
+      font-size: 13px;
+      text-align:center;
+      margin-bottom: 10px;
+      min-height: 18px;
+    }
+
+    .pad{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .btn{
+      border:none;
+      border-radius: 16px;
+      padding: 14px 0;
+      font-size: 16px;
+      font-weight: 900;
+      cursor:pointer;
+      background: #f7f7fb;
+      color: #4c1b32;
+      box-shadow: 0 8px 18px rgba(0,0,0,.08);
+      transition: transform .06s ease, filter .2s ease;
+      touch-action: manipulation;
+    }
+    .btn:active{ transform: translateY(1px) scale(.99); }
+    .btn:hover{ filter: brightness(.98); }
+
+    .rowBottom{ display:flex; gap:10px; margin-top: 10px; }
+    .rowBottom .btn{ flex:1; }
+    .btnDanger{ background: rgba(255,47,117,.12); color: var(--accent); }
+    .btnOk{ background: var(--accent); color: white; }
+
+    /* schermata finale */
+    .finalCard{
+      width:min(520px, 92vw);
+      background: rgba(255,255,255,.92);
+      border-radius: 26px;
+      padding: 18px 16px 16px;
+      box-shadow: 0 24px 70px rgba(0,0,0,.22);
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .finalCard::before{
+      content:"";
+      position:absolute;
+      inset:-30px;
+      background:
+        radial-gradient(closest-side, rgba(255,47,117,.22), transparent 70%),
+        radial-gradient(closest-side, rgba(255,255,255,.55), transparent 65%);
+      opacity:.55;
+      transform: rotate(-6deg);
+      pointer-events:none;
+    }
+    .finalInner{ position:relative; }
+
+    .finalTop{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      font-weight:900;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .big{
+      font-size: 56px;
+      font-weight: 1000;
+      color: var(--accent);
+      letter-spacing: .5px;
+      margin: 4px 0 6px;
+      text-shadow: 0 12px 28px rgba(255,47,117,.22);
+    }
+    .datePill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,47,117,.10);
+      color: var(--txt);
+      font-weight: 900;
+      margin-bottom: 10px;
+      box-shadow: 0 10px 22px rgba(0,0,0,.08);
+    }
+
+    .finalImg{
+      width: min(380px, 85vw);
+      height: auto;
+      max-height: 60vh;
+      object-fit: contain;
+      object-position: center;
+      border-radius: 22px;
+      box-shadow: 0 18px 45px rgba(0,0,0,.18);
+      border: 3px solid rgba(255,47,117,.18);
+      margin: 10px auto 14px;
+      display: block;
+      background: rgba(255,255,255,.6);
+    }
+
+    .dedica{
+      margin: 6px 0 12px;
+      font-size: 15px;
+      font-weight: 800;
+      color: #7a3552;
+      font-style: italic;
+      opacity: .95;
+    }
+
+    .subWarn{
+      color: var(--muted);
+      font-weight: 800;
+      margin: 10px 0 12px;
+    }
+
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; }
+    .actionBtn{
+      border:none;
+      flex:1;
+      padding: 14px 14px;
+      border-radius: 16px;
+      font-weight: 900;
+      cursor:pointer;
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);
+      touch-action: manipulation;
+      min-width: 160px;
+    }
+    .primary{ background: var(--accent); color: white; }
+    .secondary{ background: rgba(255,47,117,.12); color: var(--accent); }
+
+    .footerNote{
+      margin-top: 14px;
+      text-align:center;
+      font-size: 12px;
+      color: rgba(255,255,255,.85);
+      opacity:.9;
+    }
+
+    /* ===== MINIGIOCO: ACCHIAPPA I CUORI ===== */
+    .miniWrap{
+      width: min(460px, 92vw);
+      margin: 6px auto 0;
+      padding: 12px 12px 10px;
+      border-radius: 18px;
+      background: rgba(255,47,117,.08);
+      border: 2px solid rgba(255,47,117,.14);
+      box-shadow: 0 12px 26px rgba(0,0,0,.08);
+      text-align:left;
+    }
+    .miniTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 8px;
+      font-weight: 900;
+      color: var(--txt);
+      flex-wrap: wrap;
+    }
+    .miniStats{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .pill{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.65);
+      border: 1px solid rgba(255,47,117,.12);
+      font-weight: 900;
+      color: #4c1b32;
+      font-size: 12px;
+    }
+    .miniHint{
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .arena{
+      position:relative;
+      height: 220px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.75);
+      border: 2px dashed rgba(255,47,117,.18);
+      overflow:hidden;
+      user-select:none;
+      touch-action: manipulation;
+    }
+    .popHeart{
+      position:absolute;
+      width: 44px;
+      height: 44px;
+      display:grid;
+      place-items:center;
+      border-radius: 999px;
+      cursor:pointer;
+      font-size: 22px;
+      background: rgba(255,47,117,.10);
+      border: 2px solid rgba(255,47,117,.18);
+      box-shadow: 0 14px 28px rgba(0,0,0,.10);
+      transform: scale(.9);
+      animation: popIn .12s ease forwards;
+    }
+    @keyframes popIn{ to { transform: scale(1); } }
+
+    .miniButtons{ display:flex; gap:10px; margin-top: 10px; }
+    .miniButtons .actionBtn{ flex:1; }
+    .miniMsg{
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #7a3552;
+      min-height: 16px;
+      text-align:center;
+    }
+
+    /* ===== SCATOLA DEI RICORDI ===== */
+    .memoryWrap{
+      width: min(460px, 92vw);
+      margin: 10px auto 6px;
+      padding: 12px 12px 12px;
+      border-radius: 18px;
+      background: rgba(255,47,117,.08);
+      border: 2px solid rgba(255,47,117,.14);
+      box-shadow: 0 12px 26px rgba(0,0,0,.08);
+      text-align:left;
+    }
+    .memoryTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 8px;
+      font-weight: 1000;
+      color: var(--txt);
+      flex-wrap: wrap;
+    }
+    .memoryTop .right{
+      font-size: 12px;
+      font-weight: 900;
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.65);
+      border: 1px solid rgba(255,47,117,.12);
+      color:#4c1b32;
+    }
+    .memoryHint{
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .memoryCard{
+      background: rgba(255,255,255,.86);
+      border: 2px solid rgba(255,47,117,.14);
+      border-radius: 16px;
+      padding: 12px 12px 10px;
+      box-shadow: 0 14px 30px rgba(0,0,0,.10);
+      margin-bottom: 10px;
+      position:relative;
+      overflow:hidden;
+      display:none;
+    }
+    .memoryCard.show{ display:block; }
+    .memoryCard.fadeInCard{ animation: memIn .22s ease both; }
+    @keyframes memIn{
+      from{ opacity:0; transform: translateY(6px) scale(.985); filter: blur(1px); }
+      to{ opacity:1; transform: translateY(0) scale(1); filter: blur(0); }
+    }
+    .memoryCard::before{
+      content:"";
+      position:absolute;
+      inset:-25px;
+      background:
+        radial-gradient(closest-side, rgba(255,47,117,.16), transparent 70%),
+        radial-gradient(closest-side, rgba(255,255,255,.55), transparent 65%);
+      opacity:.6;
+      transform: rotate(-8deg);
+      pointer-events:none;
+    }
+    .memoryCardInner{ position:relative; text-align:left; }
+    .memoryBadgeRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 6px;
+    }
+    .memoryBadge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,47,117,.12);
+      color: var(--accent);
+      font-weight: 1000;
+      font-size: 12px;
+    }
+    .memoryDate{
+      font-weight: 1000;
+      color:#4c1b32;
+      font-size: 12px;
+      opacity:.9;
+    }
+    .memoryText{
+      font-weight: 1000;
+      color:#5a1f39;
+      font-size: 14px;
+      line-height: 1.25;
+    }
+    .memoryButtons{ display:flex; gap:10px; flex-wrap:wrap; }
+    .memoryButtons .actionBtn{ flex:1; min-width: 160px; }
+    .memoryMsg{
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #7a3552;
+      min-height: 16px;
+      text-align:center;
+    }
+
+    /* extra mobile */
+    @media (max-width: 420px){
+      .big{ font-size: 44px; }
+      .lockIcon{ width: 160px; height: 160px; }
+      .finalImg{ max-height: 260px; }
+      .arena{ height: 200px; }
+      .popHeart{ width: 42px; height: 42px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="hearts" id="hearts"></div>
+
+  <div class="frame">
+    <div class="panel">
+
+      <!-- SCREEN 1 -->
+      <div class="screen active" id="screenStart">
+        <button class="lockBtn" id="openBtn" aria-label="Apri">
+          <svg class="lockIcon" viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="gHeart" x1="20" y1="30" x2="200" y2="200" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#ff6aa7"/>
+                <stop offset="1" stop-color="#ff2f75"/>
+              </linearGradient>
+              <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+                <feGaussianBlur stdDeviation="3" result="b"/>
+                <feColorMatrix in="b" type="matrix"
+                  values="1 0 0 0 0
+                          0 1 0 0 0
+                          0 0 1 0 0
+                          0 0 0 .25 0" result="s"/>
+                <feMerge>
+                  <feMergeNode in="s"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <path filter="url(#soft)" fill="url(#gHeart)"
+              d="M110 190
+                 C110 190 25 132 25 85
+                 C25 60 43 44 65 44
+                 C82 44 97 54 110 70
+                 C123 54 138 44 155 44
+                 C177 44 195 60 195 85
+                 C195 132 110 190 110 190Z"/>
+
+            <path d="M78 86
+                     C78 62 92 48 110 48
+                     C128 48 142 62 142 86"
+                  fill="none" stroke="rgba(255,255,255,.85)" stroke-width="12" stroke-linecap="round"/>
+
+            <circle cx="110" cy="116" r="14" fill="#4b1631" opacity=".95"/>
+            <path d="M110 130 v20" stroke="#4b1631" stroke-width="10" stroke-linecap="round"/>
+            <circle cx="110" cy="116" r="22" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="10"/>
+          </svg>
+        </button>
+
+        <div class="title">Fai clic per aprire il mio cuore</div>
+        <div class="hint">Inserisci la nostra data speciale 💗</div>
+      </div>
+
+      <!-- SCREEN 2 -->
+      <div class="screen" id="screenFinal">
+        <div class="finalCard">
+          <div class="finalInner">
+            <div class="finalTop">❤️ <span>Data corretta</span> ❤️</div>
+            <div class="big">Ti voglio bene</div>
+
+            <div class="datePill">📅 <span>22/01/2026</span></div>
+
+            <!-- ===== SCATOLA DEI RICORDI ===== -->
+            <div class="memoryWrap" id="memoryWrap">
+              <div class="memoryTop">
+                <div>📦 Scatola dei ricordi</div>
+                <div class="right">Rimasti: <span id="memLeft">5</span></div>
+              </div>
+              <div class="memoryHint">Clicca “Pesca” per vedere un ricordo (in ordine) 💌</div>
+
+              <div class="memoryCard" id="memoryCard">
+                <div class="memoryCardInner">
+                  <div class="memoryBadgeRow">
+                    <span class="memoryBadge">Ricordo</span>
+                    <span class="memoryDate" id="memDate">—</span>
+                  </div>
+                  <div class="memoryText" id="memText">—</div>
+                </div>
+              </div>
+
+              <div class="memoryButtons">
+                <button class="actionBtn primary" id="drawMemBtn">Pesca una cartolina</button>
+                <button class="actionBtn secondary" id="resetMemBtn">Ricomincia</button>
+              </div>
+
+              <div class="memoryMsg" id="memMsg"></div>
+            </div>
+
+            <img class="finalImg" src="fotoFinale.png" alt="Foto finale"
+                 onerror="this.style.display='none'; document.getElementById('imgFail').style.display='block';" />
+
+            <p class="dedica" id="dedicaText">Per Cri, con tutto il mio cuore ❤️</p>
+
+            <div class="subWarn" id="imgFail" style="display:none;">
+              Non trovo <b>fotoFinale.png</b>. Metti il file nella stessa cartella dell’HTML.
+            </div>
+
+            <!-- ===== MINIGIOCO ===== -->
+            <div class="miniWrap" id="miniWrap">
+              <div class="miniTop">
+                <div>🎮 Minigioco: Acchiappa i cuori</div>
+                <div class="miniStats">
+                  <div class="pill">⏱️ <span id="timeLeft">15</span>s</div>
+                  <div class="pill">💗 Punti: <span id="score">0</span></div>
+                  <div class="pill">🏆 Record: <span id="best">0</span></div>
+                </div>
+              </div>
+              <div class="miniHint">Clicca più cuori possibile prima che finisca il tempo!</div>
+              <div class="arena" id="arena" aria-label="Arena minigioco"></div>
+
+              <div class="miniButtons">
+                <button class="actionBtn primary" id="startGameBtn">Avvia</button>
+                <button class="actionBtn secondary" id="resetBestBtn">Reset record</button>
+              </div>
+
+              <div class="miniMsg" id="miniMsg"></div>
+            </div>
+
+            <!-- ✅ RIMOSSO IL BOTTONE INDIETRO -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footerNote">Love Lock • HTML/CSS/JS</div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal" id="modal">
+    <div class="card" role="dialog" aria-modal="true" aria-label="Inserisci data">
+      <button class="closeX" id="closeBtn" title="Chiudi">×</button>
+      <div class="cardHeader">❤️ <span>Data Speciale</span> ❤️</div>
+
+      <div class="display"><span id="displayText">DD/MM/AAAA</span></div>
+      <div class="msg" id="msg">Digita la data e premi ❤️</div>
+
+      <div class="pad" id="pad"></div>
+
+      <div class="rowBottom">
+        <button class="btn btnDanger" id="clearBtn">Cancella</button>
+        <button class="btn btnOk" id="okBtn">❤️</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== CONFIG =====
+    const CORRECT = "22/01/2026";
+
+    // ===== HEARTS BG =====
+    const heartsEl = document.getElementById("hearts");
+    const heartChars = ["💗","💖","💞","💓","💘","💕","❤️"];
+    const COUNT = 28;
+
+    function rand(min,max){ return Math.random()*(max-min)+min; }
+
+    for(let i=0;i<COUNT;i++){
+      const h = document.createElement("div");
+      h.className = "heart";
+      h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+      h.style.left = rand(0,100) + "vw";
+      h.style.animationDuration = rand(6,14) + "s";
+      h.style.animationDelay = rand(0,8) + "s";
+      h.style.fontSize = rand(14,28) + "px";
+      h.style.opacity = rand(.35,.95);
+      heartsEl.appendChild(h);
+    }
+
+    function burstHearts(){
+      for(let i=0;i<18;i++){
+        const h = document.createElement("div");
+        h.className = "heart";
+        h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+        h.style.left = rand(10,90) + "vw";
+        h.style.animationDuration = rand(3.5,6) + "s";
+        h.style.animationDelay = "0s";
+        h.style.fontSize = rand(18,34) + "px";
+        h.style.opacity = rand(.55,1);
+        heartsEl.appendChild(h);
+        setTimeout(()=>h.remove(), 7000);
+      }
+    }
+
+    // ===== SCREENS =====
+    const screenStart = document.getElementById("screenStart");
+    const screenFinal = document.getElementById("screenFinal");
+
+    function switchScreen(fromEl, toEl){
+      fromEl.classList.add("fadeOut");
+      setTimeout(()=>{
+        fromEl.classList.remove("active","fadeOut");
+        toEl.classList.add("active","fadeIn");
+        setTimeout(()=>toEl.classList.remove("fadeIn"), 600);
+      }, 350);
+    }
+
+    // ===== MODAL + KEYPAD =====
+    const modal = document.getElementById("modal");
+    const openBtn = document.getElementById("openBtn");
+    const closeBtn = document.getElementById("closeBtn");
+    const displayText = document.getElementById("displayText");
+    const msg = document.getElementById("msg");
+    const pad = document.getElementById("pad");
+    const clearBtn = document.getElementById("clearBtn");
+    const okBtn = document.getElementById("okBtn");
+
+    let raw = ""; // solo numeri: DDMMYYYY
+
+    function format(rawDigits){
+      const d = rawDigits.slice(0,2);
+      const m = rawDigits.slice(2,4);
+      const y = rawDigits.slice(4,8);
+      let out = "";
+      out += (d.length ? d : "DD");
+      out += "/";
+      out += (m.length ? m : "MM");
+      out += "/";
+      out += (y.length ? y : "AAAA");
+      return out;
+    }
+
+    function setDisplay(){ displayText.textContent = format(raw); }
+
+    function openModal(){
+      modal.classList.add("show");
+      msg.textContent = "Digita la data e premi ❤️";
+      msg.style.color = "";
+      raw = "";
+      setDisplay();
+    }
+    function closeModal(){ modal.classList.remove("show"); }
+
+    openBtn.addEventListener("click", openModal);
+    closeBtn.addEventListener("click", closeModal);
+    modal.addEventListener("click", (e)=>{ if(e.target === modal) closeModal(); });
+
+    // tastierino con 0 al centro
+    const layout = [
+      "1","2","3",
+      "4","5","6",
+      "7","8","9",
+      "","0",""
+    ];
+
+    function addDigit(d){
+      if(raw.length >= 8) return;
+      raw += d;
+      setDisplay();
+    }
+
+    layout.forEach(k=>{
+      if(k === ""){
+        const spacer = document.createElement("div");
+        pad.appendChild(spacer);
+        return;
+      }
+      const b = document.createElement("button");
+      b.className = "btn";
+      b.textContent = k;
+      b.addEventListener("click", ()=> addDigit(k));
+      pad.appendChild(b);
+    });
+
+    clearBtn.addEventListener("click", ()=>{
+      raw = "";
+      setDisplay();
+      msg.textContent = "Cancellato. Riprova 🙂";
+      msg.style.color = "";
+    });
+
+    function check(){
+      if(raw.length !== 8){
+        msg.textContent = "Completa la data (GGMMYYYY).";
+        msg.style.color = "#9a5572";
+        return;
+      }
+      const typed = format(raw);
+      if(typed === CORRECT){
+        closeModal();
+        burstHearts();
+        switchScreen(screenStart, screenFinal);
+      } else {
+        msg.textContent = "Ups! No 💔";
+        msg.style.color = "#d10b4a";
+      }
+    }
+
+    okBtn.addEventListener("click", check);
+
+    // tastiera: numeri, backspace, enter, esc
+    window.addEventListener("keydown", (e)=>{
+      if(!modal.classList.contains("show")) return;
+      if(e.key >= "0" && e.key <= "9"){
+        addDigit(e.key);
+      } else if(e.key === "Backspace"){
+        raw = raw.slice(0,-1); setDisplay();
+      } else if(e.key === "Enter"){
+        check();
+      } else if(e.key === "Escape"){
+        closeModal();
+      }
+    });
+
+    // ===== SCATOLA DEI RICORDI (in ordine) =====
+    const drawMemBtn = document.getElementById("drawMemBtn");
+    const resetMemBtn = document.getElementById("resetMemBtn");
+    const memLeftEl = document.getElementById("memLeft");
+    const memDateEl = document.getElementById("memDate");
+    const memTextEl = document.getElementById("memText");
+    const memMsgEl = document.getElementById("memMsg");
+    const memoryCard = document.getElementById("memoryCard");
+
+    const memories = [
+      { date: "22/01/2026", text: "Prima conoscenza 💗" },
+      { date: "23/01/2026", text: "Primi litigi (inutili)" },
+      { date: "24/01/2026", text: "Iniziati a scriverci su IG 📲" },
+      { date: "27/01/2026", text: "Prima volta beccati 👀" },
+      { date: "28/01/2026", text: "Seconda volta beccati (che scemi) " },
+    ];
+
+    let memIndex = 0;
+
+    function updateMemLeft(){
+      const left = Math.max(0, memories.length - memIndex);
+      memLeftEl.textContent = String(left);
+    }
+
+    function showMemoryCard(item){
+      memDateEl.textContent = item.date;
+      memTextEl.textContent = item.text;
+
+      memoryCard.classList.add("show");
+      memoryCard.classList.remove("fadeInCard");
+      void memoryCard.offsetWidth; // reflow per ri-trigger animazione
+      memoryCard.classList.add("fadeInCard");
+    }
+
+    function resetMemories(){
+      memIndex = 0;
+      updateMemLeft();
+      memMsgEl.textContent = "Pronto 🙂 Pesca la prima cartolina!";
+      memMsgEl.style.color = "#7a3552";
+      memoryCard.classList.remove("show");
+    }
+
+    drawMemBtn.addEventListener("click", ()=>{
+      if(memIndex >= memories.length){
+        memMsgEl.textContent = "Finite! 💝 Premi “Ricomincia” per rivederle.";
+        memMsgEl.style.color = "#7a3552";
+        return;
+      }
+      const item = memories[memIndex];
+      memIndex += 1;
+      updateMemLeft();
+      showMemoryCard(item);
+
+      if(memIndex >= memories.length){
+        memMsgEl.textContent = "Hai aperto tutta la scatola 💗";
+      } else {
+        memMsgEl.textContent = "Ancora una… 👇";
+      }
+      memMsgEl.style.color = "#7a3552";
+      burstHearts();
+    });
+
+    resetMemBtn.addEventListener("click", resetMemories);
+
+    // inizializza stato scatola
+    resetMemories();
+
+    // ===== MINIGIOCO =====
+    const arena = document.getElementById("arena");
+    const startGameBtn = document.getElementById("startGameBtn");
+    const resetBestBtn = document.getElementById("resetBestBtn");
+    const scoreEl = document.getElementById("score");
+    const bestEl = document.getElementById("best");
+    const timeLeftEl = document.getElementById("timeLeft");
+    const miniMsg = document.getElementById("miniMsg");
+
+    const BEST_KEY = "loveLock_bestScore";
+    let best = Number(localStorage.getItem(BEST_KEY) || 0);
+    bestEl.textContent = best;
+
+    let playing = false;
+    let score = 0;
+    let timeLeft = 15;
+    let tickTimer = null;
+    let spawnTimer = null;
+
+    function clearArena(){
+      arena.querySelectorAll(".popHeart").forEach(el=>el.remove());
+    }
+
+    function spawnHeart(){
+      if(!playing) return;
+      const r = arena.getBoundingClientRect();
+      const size = 44;
+      const pad = 6;
+      const x = Math.max(pad, Math.floor(rand(pad, r.width - size - pad)));
+      const y = Math.max(pad, Math.floor(rand(pad, r.height - size - pad)));
+
+      const h = document.createElement("div");
+      h.className = "popHeart";
+      h.textContent = heartChars[Math.floor(Math.random()*heartChars.length)];
+      h.style.left = x + "px";
+      h.style.top = y + "px";
+
+      const ttl = Math.floor(rand(650, 1100));
+      const kill = setTimeout(()=>{ h.remove(); }, ttl);
+
+      h.addEventListener("click", ()=>{
+        if(!playing) return;
+        clearTimeout(kill);
+        h.remove();
+        score += 1;
+        scoreEl.textContent = score;
+        burstHearts();
+      });
+
+      arena.appendChild(h);
+    }
+
+    function endGame(){
+      if(!playing) return;
+      playing = false;
+      clearInterval(spawnTimer);
+      clearInterval(tickTimer);
+      spawnTimer = null;
+      tickTimer = null;
+      clearArena();
+
+      if(score > best){
+        best = score;
+        localStorage.setItem(BEST_KEY, String(best));
+        bestEl.textContent = best;
+        miniMsg.textContent = "NUOVO RECORD! 🏆💗";
+      } else {
+        miniMsg.textContent = "Finito! Punti: " + score + " 💗";
+      }
+    }
+
+    function startGame(){
+      if(playing) return;
+      playing = true;
+      score = 0;
+      timeLeft = 15;
+      scoreEl.textContent = score;
+      timeLeftEl.textContent = timeLeft;
+      miniMsg.textContent = "Vai! 💘";
+      clearArena();
+
+      spawnTimer = setInterval(spawnHeart, 330);
+      tickTimer = setInterval(()=>{
+        timeLeft -= 1;
+        timeLeftEl.textContent = timeLeft;
+        if(timeLeft <= 0) endGame();
+      }, 1000);
+    }
+
+    startGameBtn.addEventListener("click", startGame);
+
+    resetBestBtn.addEventListener("click", ()=>{
+      best = 0;
+      localStorage.setItem(BEST_KEY, "0");
+      bestEl.textContent = "0";
+      miniMsg.textContent = "Record azzerato 🙂";
+    });
+
+    // ✅ se cambi idea e vuoi rimettere “Indietro”, dimmelo e lo reintegro
+  </script>
+</body>
+</html>
