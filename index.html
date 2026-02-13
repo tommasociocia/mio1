@@ -614,6 +614,12 @@
         <div class="finalCard">
           <div class="finalInner">
             <div class="finalTop">❤️ <span>Data corretta</span> ❤️</div>
+
+            <!-- ✅ BOTTONE MUSICA (in alto) -->
+            <div class="actions" style="margin: 2px 0 10px;">
+              <button class="actionBtn secondary" id="musicBtn">🎵 Avvia canzone</button>
+            </div>
+
             <div class="big">Ti voglio bene</div>
 
             <div class="datePill">📅 <span>22/01/2026</span></div>
@@ -701,6 +707,9 @@
       </div>
     </div>
   </div>
+
+  <!-- ✅ AUDIO (metti canzone.mp3 nella stessa cartella dell'HTML) -->
+  <audio id="bgMusic" src="canzone.mp3"></audio>
 
   <script>
     // ===== CONFIG =====
@@ -1024,6 +1033,26 @@
       bestEl.textContent = "0";
       miniMsg.textContent = "Record azzerato 🙂";
     });
+
+    // ===== MUSICA (canzone.mp3) =====
+    const bgMusic = document.getElementById("bgMusic");
+    const musicBtn = document.getElementById("musicBtn");
+    let musicPlaying = false;
+
+    if(musicBtn){
+      musicBtn.addEventListener("click", ()=>{
+        if(!musicPlaying){
+          bgMusic.play();
+          musicBtn.textContent = "⏸️ Ferma canzone";
+          musicPlaying = true;
+        } else {
+          bgMusic.pause();
+          bgMusic.currentTime = 0; // riparte da capo quando la riavvii
+          musicBtn.textContent = "🎵 Avvia canzone";
+          musicPlaying = false;
+        }
+      });
+    }
 
     // ✅ se cambi idea e vuoi rimettere “Indietro”, dimmelo e lo reintegro
   </script>
